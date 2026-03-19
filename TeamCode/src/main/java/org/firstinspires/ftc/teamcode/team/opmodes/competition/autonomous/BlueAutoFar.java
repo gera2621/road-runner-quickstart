@@ -20,6 +20,8 @@ public class BlueAutoFar extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        //so i can push
+
         int littlePause = 200;
         int scorePause = 1000;
         int gatePause = 2500;
