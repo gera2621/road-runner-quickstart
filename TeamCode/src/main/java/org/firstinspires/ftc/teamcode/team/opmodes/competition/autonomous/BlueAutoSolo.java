@@ -126,7 +126,7 @@ public class BlueAutoSolo extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .splineToLinearHeading(GateIntakePose, Math.toRadians(-120))
                 .waitSeconds((double)gatePause/1000)
-                .afterTime(0.25, scoringSystem.intakeAction(0, 0))
+                .afterTime(0, scoringSystem.intakeAction(0, 0))
 
                 //Move to scoring position
                 .setTangent(Math.toRadians(-270))
