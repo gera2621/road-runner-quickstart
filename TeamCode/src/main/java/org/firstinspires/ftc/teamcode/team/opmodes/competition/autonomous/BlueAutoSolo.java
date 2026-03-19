@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
-@Autonomous(name = "1. Autonomous BLUE Near Solo", group = "Autonomous OpMode")
+@Autonomous(name = "1. Autonomous BLUE Goal Solo", group = "Autonomous OpMode")
 public class BlueAutoSolo extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -54,8 +54,8 @@ public class BlueAutoSolo extends LinearOpMode {
         Vector2d PPGGrabPos = new Vector2d(-10,-44);
         Pose2d PPGGrabPose = new Pose2d(-10,-44, Math.toRadians(-90));
 
-        Vector2d PGPAlignPos = new Vector2d(17,-35);
-        Pose2d PGPAlignPose = new Pose2d(17,-35, Math.toRadians(-90));
+        Vector2d PGPAlignPos = new Vector2d(17,-32);
+        Pose2d PGPAlignPose = new Pose2d(17,-32, Math.toRadians(-90));
 
         Vector2d PGPGrabPos = new Vector2d(17,-49);
         Pose2d PGPGrabPose = new Pose2d(17,-49, Math.toRadians(-90));

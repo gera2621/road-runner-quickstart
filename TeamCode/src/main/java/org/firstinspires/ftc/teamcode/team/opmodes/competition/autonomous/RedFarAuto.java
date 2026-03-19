@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
-@Autonomous(name = "BlueParkAuto", group = "Autonomous OpMode")
-public class BlueParkAuto extends LinearOpMode {
+@Autonomous(name = "6. Autonomous RED Far", group = "Autonomous OpMode")
+public class RedFarAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -29,19 +29,19 @@ public class BlueParkAuto extends LinearOpMode {
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
 
-        Pose2d InitPosition = new Pose2d(60, -14.5, -90);
+        Pose2d InitPosition = new Pose2d(60, 14.5, 90);
 
-        Vector2d ParkPos = new Vector2d(-56, -14.5);
-        Pose2d ParkPose = new Pose2d(-56, -14.5, Math.toRadians(-90));
+        Vector2d ParkPos = new Vector2d(56, 14.5);
+        Pose2d ParkPose = new Pose2d(56, 14.5, Math.toRadians(90));
 
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
         TrajectoryActionBuilder moveToPark = drivetrain.actionBuilder(InitPosition)
-                .strafeToLinearHeading(ParkPos, Math.toRadians(-90));
+                .strafeToLinearHeading(ParkPos, Math.toRadians(90));
 
 
-//
+
         waitForStart();
         if (isStopRequested()) return;
 

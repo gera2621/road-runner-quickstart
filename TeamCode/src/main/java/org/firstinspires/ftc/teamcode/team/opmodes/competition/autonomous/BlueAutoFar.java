@@ -15,56 +15,40 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
-@Autonomous(name = "RedParkAuto", group = "Autonomous OpMode")
-public class RedParkAuto extends LinearOpMode {
+@Autonomous(name = "3. Autonomous BLUE Far", group = "Autonomous OpMode")
+public class BlueAutoFar extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        int tinyPause = 200;
-        int littlePause = 250;
-        int bigPause = 500;
-        int scorePause = 1250;
+        int littlePause = 200;
+        int scorePause = 1000;
+        int gatePause = 2500;
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-
-        Pose2d InitPosition = new Pose2d(60, 14.5, 90);
-
-        Vector2d ParkPos = new Vector2d(56, 14.5);
-        Pose2d ParkPose = new Pose2d(56, 14.5, Math.toRadians(90));
-
-
-        MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
-
-        TrajectoryActionBuilder moveToPark = drivetrain.actionBuilder(InitPosition)
-                .strafeToLinearHeading(ParkPos, Math.toRadians(90));
-
-
-
-        waitForStart();
-        if (isStopRequested()) return;
-
-        ScoringSystem ScoringSystem = new ScoringSystem(
+        ScoringSystem scoringSystem = new ScoringSystem(
                 (DcMotorEx) hardwareMap.dcMotor.get("launcher"),
                 (DcMotorEx) hardwareMap.dcMotor.get("intake"),
                 (DcMotorEx) hardwareMap.dcMotor.get("turret"),
                 (DcMotorEx) hardwareMap.dcMotor.get("launcher2")
         );
+
         ServoGate ServoGate = new ServoGate(
                 hardwareMap.servo.get("gate")
         );
 
-        ServoGate.closeGate();
-        ScoringSystem.intake(0,1);
+        Pose2d InitPosition = new Pose2d(0, 0, 0);
 
-        Actions.runBlocking(new SequentialAction(moveToPark.build()));
+        MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
-        wait(500);
-
-        ScoringSystem.intake(0,0);
+        waitForStart();
+        if (isStopRequested()) return;
 
         while(opModeIsActive()) {
+
+            blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
+
             telemetry.addData("Intake Motor Velocity: ", ScoringSystem.getIntakeVel());
             telemetry.addData("Launcher Motor Velocity ", ScoringSystem.getLauncherVel());
 
