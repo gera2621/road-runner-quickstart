@@ -197,6 +197,9 @@ public class TeleOpCompetitionRed extends LinearOpMode {
                     if(!ManualSpeedOn){
                         scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose)));
                     }
+//                    else {
+//                        scoringsystem.setLaunchVel(1365);
+//                    }
 
                     if (launcherAccel.isPressed()) {
                         scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
@@ -238,7 +241,7 @@ public class TeleOpCompetitionRed extends LinearOpMode {
                     if(!ManualSpeedOn){
                         scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose)));
                     } else {
-                        scoringsystem.setLaunchVel(1200);
+                        scoringsystem.setLaunchVel(1365);
                     }
 
                     if (launcherAccel.isPressed()) {

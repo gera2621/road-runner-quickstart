@@ -61,7 +61,7 @@ public class RedAutoFar extends LinearOpMode {
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
-        scoringSystem.setLaunchVel(2950);
+        scoringSystem.setLaunchVel(2820);
 
         int scoreAngle = 155;
 
@@ -73,6 +73,7 @@ public class RedAutoFar extends LinearOpMode {
 
                 //Move to Scoring Position
                 .strafeToLinearHeading(ScorePositionPos, Math.toRadians(scoreAngle))
+                .waitSeconds((double)littlePause/500)
 
                 //Score
                 .afterTime(0, scoringSystem.intakeAction(0, 0))

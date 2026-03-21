@@ -27,9 +27,9 @@ public class ScoringSystem {
     }
     @Config
     public static class launcherPIDF {
-        public static double P = 175;
+        public static double P = 215;
         public static double I = 0;
-        public static double D = 0;
+        public static double D = 3;
         public static double F = 16.5;
     }
     @Config
