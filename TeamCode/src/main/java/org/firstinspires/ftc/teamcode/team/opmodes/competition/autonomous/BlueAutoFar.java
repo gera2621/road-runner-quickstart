@@ -40,8 +40,8 @@ public class BlueAutoFar extends LinearOpMode {
 
         Pose2d InitPosition = new Pose2d(63, -26.29, Math.toRadians(-180));
 
-        Pose2d ScorePositionPose = new Pose2d(55, -11, Math.toRadians(-155));
-        Vector2d ScorePositionPos = new Vector2d(55, -11);
+        Pose2d ScorePositionPose = new Pose2d(55, -23, Math.toRadians(-155));
+        Vector2d ScorePositionPos = new Vector2d(55, -23);
 
         Pose2d HumanAlignPose = new Pose2d(63.5,-52, -90);
         Vector2d HumanAlignPos = new Vector2d(63.5,-52);
@@ -59,7 +59,7 @@ public class BlueAutoFar extends LinearOpMode {
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
-        scoringSystem.setLaunchVel(2820);
+        scoringSystem.setLaunchVel(2100);
 
         int scoreAngle = -155;
 

@@ -52,7 +52,7 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
 //        clear blackboard after teleop. that code upt here is wrong
 
-        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,1750,AngleUnit.DEGREES,0.0);
+        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
         Pose2D InitPose = new Pose2D(DistanceUnit.MM,-752.313,1360.717,AngleUnit.DEGREES,90);
 
         //if below doesn't work and sets the bot to 0, 0 replace ResetPosAndIMU with recalibrateIMU()
@@ -125,10 +125,10 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
         GamepadButton stateBack = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.LEFT_BUMPER);
         GamepadButton stateForward = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
-        GamepadButton launcherAccel = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_UP);
-        GamepadButton launcherAccelSmol = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_RIGHT);
-        GamepadButton launcherDecel = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_DOWN);
-        GamepadButton launcherDecelSmol = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_LEFT);
+        GamepadButton UpAccel = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_UP);
+        GamepadButton RightAccelSmol = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_RIGHT);
+        GamepadButton DownDecel = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_DOWN);
+        GamepadButton LeftDecelSmol = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.DPAD_LEFT);
         GamepadButton ManualSpeedToggle = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.triangle);
         GamepadButton ManualTurretToggle = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.circle);
         GamepadButton PinpointReset = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.START);
@@ -205,22 +205,38 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
                     if(!ManualSpeedOn){
                         scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose)));
-                    }
-//                    else {
-//                        scoringsystem.setLaunchVel(1365);
-//                    }
 
-                    if (launcherAccel.isPressed()) {
-                        scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
-                    }
-                    if (launcherAccelSmol.isPressed()){
-                        scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
-                    }
-                    if (launcherDecel.isPressed()) {
-                        scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
-                    }
-                    if (launcherDecelSmol.isPressed()){
-                        scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
+                        //up = decrease y
+                        //down = increase y
+                        //left = increase x
+                        //right = decrease x
+                        if (UpAccel.isPressed()) {
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)+50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+                        if (RightAccelSmol.isPressed()){
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)+50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+                        if (DownDecel.isPressed()) {
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)-50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+                        if (LeftDecelSmol.isPressed()){
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)-50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+
+                    } else {
+                        if (UpAccel.isPressed()) {
+                            scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
+                        }
+                        if (RightAccelSmol.isPressed()){
+                            scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
+                        }
+                        if (DownDecel.isPressed()) {
+                            scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
+                        }
+                        if (LeftDecelSmol.isPressed()){
+                            scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
+                        }
+                        scoringsystem.setLaunchVel(1365);
                     }
 
                     scoringsystem.launcherUpdate();
@@ -249,21 +265,38 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
                     if(!ManualSpeedOn){
                         scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose)));
-                    } else {
-                        scoringsystem.setLaunchVel(1365);
-                    }
 
-                    if (launcherAccel.isPressed()) {
-                        scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
-                    }
-                    if (launcherAccelSmol.isPressed()){
-                        scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
-                    }
-                    if (launcherDecel.isPressed()) {
-                        scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
-                    }
-                    if (launcherDecelSmol.isPressed()){
-                        scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
+                        //up = increase y
+                        //down = decrease y
+                        //left = increase x
+                        //right = decrease x
+                        if (UpAccel.isPressed()) {
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)+50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+                        if (RightAccelSmol.isPressed()){
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)-50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+                        if (DownDecel.isPressed()) {
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)-50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+                        if (LeftDecelSmol.isPressed()){
+                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)+50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                        }
+
+                    } else {
+                        if (UpAccel.isPressed()) {
+                            scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
+                        }
+                        if (RightAccelSmol.isPressed()){
+                            scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
+                        }
+                        if (DownDecel.isPressed()) {
+                            scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
+                        }
+                        if (LeftDecelSmol.isPressed()){
+                            scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
+                        }
+                        scoringsystem.setLaunchVel(1365);
                     }
 
                     scoringsystem.launcherUpdate();

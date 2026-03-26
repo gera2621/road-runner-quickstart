@@ -78,8 +78,8 @@ public class BlueAutoSolo extends LinearOpMode {
         Vector2d GPPGrabPos = new Vector2d(36, -48);
         Pose2d GPPGrabPose = new Pose2d(36, -48, Math.toRadians(-90));
 
-        Vector2d ParkPos = new Vector2d(-0, -40);
-        Pose2d ParkPose = new Pose2d(-0, -40, Math.toRadians(-90));
+        Vector2d ParkPos = new Vector2d(-17, -32);
+        Pose2d ParkPose = new Pose2d(-17, -32, Math.toRadians(-90));
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
@@ -178,7 +178,7 @@ public class BlueAutoSolo extends LinearOpMode {
 
                 //Park
                 .afterTime(0, scoringSystem.launcherOffAction())
-                .strafeToLinearHeading(PPGGrabPos, Math.toRadians(-180));
+                .strafeTo(ParkPos);
 
         waitForStart();
         if (isStopRequested()) return;

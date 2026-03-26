@@ -51,8 +51,8 @@ public class RedAutoTeam extends LinearOpMode {
         Vector2d PPGAlignPos = new Vector2d(-10,40);
         Pose2d PPGAlignPose = new Pose2d(-10,40, Math.toRadians(90));
 
-        Vector2d PPGGrabPos = new Vector2d(-10,44);
-        Pose2d PPGGrabPose = new Pose2d(-10,44, Math.toRadians(90));
+        Vector2d PPGGrabPos = new Vector2d(-10,48);
+        Pose2d PPGGrabPose = new Pose2d(-10,48, Math.toRadians(90));
 
         Vector2d PGPAlignPos = new Vector2d(17,32);
         Pose2d PGPAlignPose = new Pose2d(17,32, Math.toRadians(90));
@@ -63,9 +63,9 @@ public class RedAutoTeam extends LinearOpMode {
         Vector2d PGPGatePos = new Vector2d(15.5, 52);
         Pose2d PGPGatePose = new Pose2d(15.5, 52, Math.toRadians(90));
 
-        Vector2d GateParkPos = new Vector2d(3, 55.5);
-        Pose2d GateParkPose = new Pose2d(3, 55.5, Math.toRadians(0));
-
+        Vector2d GateParkPos = new Vector2d(3, 59.5);
+        Pose2d GateParkPose = new Pose2d(3, 59.5, Math.toRadians(0));
+        
         Vector2d GateIntakePos = new Vector2d(12.5, 52.5);
         Pose2d GateIntakePose = new Pose2d(12.5, 52.5, Math.toRadians(120));
 
@@ -78,8 +78,8 @@ public class RedAutoTeam extends LinearOpMode {
         Vector2d GPPGrabPos = new Vector2d(36, 48);
         Pose2d GPPGrabPose = new Pose2d(36, 48, Math.toRadians(90));
 
-        Vector2d ParkPos = new Vector2d(-0, 40);
-        Pose2d ParkPose = new Pose2d(-0, 40, Math.toRadians(90));
+        Vector2d ParkPos = new Vector2d(17, 32);
+        Pose2d ParkPose = new Pose2d(17, 32, Math.toRadians(90));
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
@@ -184,7 +184,7 @@ public class RedAutoTeam extends LinearOpMode {
 
                 //Park
                 .afterTime(0, scoringSystem.launcherOffAction())
-                .strafeToLinearHeading(PPGGrabPos, Math.toRadians(180));
+                .strafeTo(ParkPos);
 
         waitForStart();
         if (isStopRequested()) return;
