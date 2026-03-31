@@ -45,12 +45,12 @@ public class TeleOpCompetitionRed extends LinearOpMode {
 
         pinpoint.recalibrateIMU();
 
-        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,-1800,AngleUnit.DEGREES,0.0);
-        Pose2D InitPose = new Pose2D(DistanceUnit.MM,-752.313,-1360.717,AngleUnit.DEGREES, -90);
-
-        //if below doesn't work and sets the bot to 0, 0 replace ResetPosAndIMU with recalibrateIMU()
+        sleep(500);
 
         pinpoint.setPosition(AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
+
+        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,-1800,AngleUnit.DEGREES,0.0);
+        Pose2D InitPose = new Pose2D(DistanceUnit.MM,-752.313,-1360.717,AngleUnit.DEGREES, -90);
 
         int SmallManualSpeedAdjustment = 5;
         int ManualSpeedAdjustment = 25;
@@ -123,6 +123,7 @@ public class TeleOpCompetitionRed extends LinearOpMode {
         GamepadButton ManualSpeedToggle = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.triangle);
         GamepadButton ManualTurretToggle = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.circle);
         GamepadButton PinpointReset = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.START);
+        GamepadButton TargetReset = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.SHARE);
 
 
         boolean ManualSpeedOn = false;
@@ -318,6 +319,10 @@ public class TeleOpCompetitionRed extends LinearOpMode {
                 ManualTurretOn = !ManualTurretOn;
             }
             scoringsystem.intake(gamepad1.left_trigger, gamepad1.right_trigger);
+
+            if(TargetReset.isPressed()){
+                TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
+            }
 
             if (PinpointReset.isPressed()) {
                 pinpoint.recalibrateIMU();

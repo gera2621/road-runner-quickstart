@@ -21,7 +21,8 @@ public class GamepadButton {
         circle,
         square,
         triangle,
-        cross
+        cross,
+        SHARE
     }
     private final Gamepad pad;
     private boolean previousState = false;
@@ -52,6 +53,7 @@ public class GamepadButton {
             case square: return pad.square;
             case triangle: return pad.triangle;
             case cross: return pad.cross;
+            case SHARE: return pad.share;
             default: return false;
         }
     }

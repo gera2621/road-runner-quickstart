@@ -45,21 +45,12 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
         pinpoint.recalibrateIMU();
 
-//        blackboard.put("position", pose);
-//        if (blackboard.containsKey("position")) {
-//            pinpoint.setPosition(blackboard.get("position"));
-//        }
+        sleep(500);
 
-//        clear blackboard after teleop. that code upt here is wrong
+        pinpoint.setPosition(AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
 
         Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
         Pose2D InitPose = new Pose2D(DistanceUnit.MM,-752.313,1360.717,AngleUnit.DEGREES,90);
-
-        //if below doesn't work and sets the bot to 0, 0 replace ResetPosAndIMU with recalibrateIMU()
-
-        //pinpoint.setPosition(InitPose);
-        pinpoint.setPosition(AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
-        //System.out.println(blackboard);
 
         int SmallManualSpeedAdjustment = 5;
         int ManualSpeedAdjustment = 25;
@@ -132,6 +123,7 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
         GamepadButton ManualSpeedToggle = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.triangle);
         GamepadButton ManualTurretToggle = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.circle);
         GamepadButton PinpointReset = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.START);
+        GamepadButton TargetReset = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.SHARE);
         GamepadButton SlowLaunchOnButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.X);
 
         boolean ManualSpeedOn = false;
@@ -325,6 +317,10 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
                 ManualTurretOn = !ManualTurretOn;
             }
             scoringsystem.intake(gamepad1.left_trigger, gamepad1.right_trigger);
+
+            if(TargetReset.isPressed()){
+                TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
+            }
 
             if (PinpointReset.isPressed()) {
                 pinpoint.recalibrateIMU();
