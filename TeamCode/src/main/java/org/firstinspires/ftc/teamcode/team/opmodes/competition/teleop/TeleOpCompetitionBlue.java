@@ -326,6 +326,14 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
             }
             scoringsystem.intake(gamepad1.left_trigger, gamepad1.right_trigger);
 
+            if (PinpointReset.isPressed()) {
+                pinpoint.recalibrateIMU();
+                sleep(500);
+                pinpoint.setPosition(new Pose2D(DistanceUnit.MM,-1494.382,-1349.533,AngleUnit.DEGREES,-90));
+            }
+
+            Pose2D pos = pinpoint.getPosition();
+
             telemetry.addData("BotInitPoseRR",(Pose2d) blackboard.get("BotPoseRR"));
             telemetry.addData("BotInitPoseConverted", AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
 
@@ -380,18 +388,9 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
             dashboardTelemetry.addData("Left Trigger: ", gamepad1.left_trigger);
             dashboardTelemetry.addData("Right Trigger: ", gamepad1.right_trigger);
 
-            Pose2D pos = pinpoint.getPosition();
-
-            if (PinpointReset.isPressed()) {
-                pinpoint.recalibrateIMU();
-                sleep(500);
-                pinpoint.setPosition(new Pose2D(DistanceUnit.MM,-1494.382,-1349.533,AngleUnit.DEGREES,-90));
-            }
-
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
             dashboardTelemetry.addData("Position", data);
             telemetry.addData("Position", data);
-
 
             String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.MM), pinpoint.getVelY(DistanceUnit.MM), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
             dashboardTelemetry.addData("Velocity", velocity);
