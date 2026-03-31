@@ -46,7 +46,7 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
         pinpoint.recalibrateIMU();
 
         sleep(500);
-
+//
         pinpoint.setPosition(AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
 
         Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
