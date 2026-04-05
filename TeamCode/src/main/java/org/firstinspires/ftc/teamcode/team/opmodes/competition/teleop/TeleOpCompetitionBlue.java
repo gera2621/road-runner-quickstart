@@ -10,9 +10,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -28,6 +30,7 @@ import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 import org.firstinspires.ftc.teamcode.team.internalLib.AuxiliaryLocalizationSystem;
 
+import java.util.List;
 import java.util.Locale;
 
 @TeleOp(name = "1. TeleOp BLUE", group = "Linear OpMode")
@@ -41,16 +44,25 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        pinpoint.setOffsets(55,70, DistanceUnit.MM);
+
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
+        pinpoint.setOffsets(53,-101, DistanceUnit.MM);
 
         pinpoint.recalibrateIMU();
 
-        sleep(500);
+        sleep(750);
 //
         pinpoint.setPosition(AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
 
-        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
+        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1680,1680,AngleUnit.DEGREES,0.0);
         Pose2D InitPose = new Pose2D(DistanceUnit.MM,-752.313,1360.717,AngleUnit.DEGREES,90);
+        Pose2D ResetPose = new Pose2D(DistanceUnit.MM, 1530, 770, AngleUnit.DEGREES, 0); //1250, 975
+        Pose2D ResetPoseHuman = new Pose2D(DistanceUnit.MM,-1494.382,-1349.533,AngleUnit.DEGREES,-90);
 
         int SmallManualSpeedAdjustment = 5;
         int ManualSpeedAdjustment = 25;
@@ -84,16 +96,14 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
         RobotState robotState = INTAKE;
 
-        boolean precision = false;
-
         //ElapsedTime timer = new ElapsedTime();
         //timer.reset();
 
         MecanumDrive drivetrain = new MecanumDrive(
-                hardwareMap.dcMotor.get("leftFront"),
-                hardwareMap.dcMotor.get("leftBack"),
-                hardwareMap.dcMotor.get("rightFront"),
-                hardwareMap.dcMotor.get("rightBack"),
+                (DcMotorEx) hardwareMap.dcMotor.get("leftFront"),
+                (DcMotorEx) hardwareMap.dcMotor.get("leftBack"),
+                (DcMotorEx) hardwareMap.dcMotor.get("rightFront"),
+                (DcMotorEx) hardwareMap.dcMotor.get("rightBack"),
                 hardwareMap.get(IMU.class, "imu")
         );
 
@@ -134,28 +144,24 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
         infoIMU += " | ver" + pinpoint.getDeviceVersion();
         infoIMU += " | yawS: " + pinpoint.getYawScalar();
 
+        double target = 0;
+        double frequency = 0;
+
         while (opModeIsActive()) {
 
             pinpoint.update();
 
-            double newTime = getRuntime();
-            double loopTime = newTime-oldTime;
-            double frequency = 1/loopTime;
-            oldTime = newTime;
-
             LLResult result = limelight.getLatestResult();
-
-            if (result != null) {
-                Pose3D botpose = result.getBotpose();
-                telemetry.addData("tx", result.getTx());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("Botpose", botpose.toString());
-            }
-            double tx_value = result.getTx();
-            double target = 0;
+//
+//            if (result != null) {
+//                Pose3D botpose = result.getBotpose();
+//                telemetry.addData("tx", result.getTx());
+//                telemetry.addData("ty", result.getTy());
+//                telemetry.addData("Botpose", botpose.toString());
+//            }
+//            double tx_value = result.getTx()
 
             //vision based targeting j
-
 
 //            if (!result.isValid() && ((last_detection - detection_start) > 0)) {
 //                //
@@ -173,14 +179,16 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 //            } else {
 //                target = 0;
 //            }
-            target = AuxiliaryLocalizationSystem.getAngle(pinpoint.getPosition(), TargetPose);
+
+            Pose2D  pinpointPose = pinpoint.getPosition();
+
+            target = AuxiliaryLocalizationSystem.getAngle(pinpointPose, TargetPose);
 
             switch (robotState) {
                 case INTAKE:
                     ServoGate.closeGate();
                     drivetrain.zeroPowerFloat();
-
-                    scoringsystem.launcherIdle();
+                    scoringsystem.launcherUpdate();
 
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
@@ -194,45 +202,6 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
                 case PRESCORE:
                     ServoGate.closeGate();
                     drivetrain.zeroPowerFloat();
-
-                    if(!ManualSpeedOn){
-                        scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose)));
-
-                        //up = decrease y
-                        //down = increase y
-                        //left = increase x
-                        //right = decrease x
-                        if (UpAccel.isPressed()) {
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)+50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-                        if (RightAccelSmol.isPressed()){
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)+50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-                        if (DownDecel.isPressed()) {
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)-50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-                        if (LeftDecelSmol.isPressed()){
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)-50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-
-                    } else {
-                        if (UpAccel.isPressed()) {
-                            scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
-                        }
-                        if (RightAccelSmol.isPressed()){
-                            scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
-                        }
-                        if (DownDecel.isPressed()) {
-                            scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
-                        }
-                        if (LeftDecelSmol.isPressed()){
-                            scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
-                        }
-                        scoringsystem.setLaunchVel(1365);
-                    }
-
-                    scoringsystem.launcherUpdate();
-
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
                     if(ManualTurretOn){
@@ -253,46 +222,6 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
                 case SCORE:
                     ServoGate.openGate();
                     drivetrain.zeroPowerBrake();
-
-
-                    if(!ManualSpeedOn){
-                        scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose)));
-
-                        //up = increase y
-                        //down = decrease y
-                        //left = increase x
-                        //right = decrease x
-                        if (UpAccel.isPressed()) {
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)+50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-                        if (RightAccelSmol.isPressed()){
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)-50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-                        if (DownDecel.isPressed()) {
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)-50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-                        if (LeftDecelSmol.isPressed()){
-                            TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)+50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
-                        }
-
-                    } else {
-                        if (UpAccel.isPressed()) {
-                            scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
-                        }
-                        if (RightAccelSmol.isPressed()){
-                            scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
-                        }
-                        if (DownDecel.isPressed()) {
-                            scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
-                        }
-                        if (LeftDecelSmol.isPressed()){
-                            scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
-                        }
-                        scoringsystem.setLaunchVel(1365);
-                    }
-
-                    scoringsystem.launcherUpdate();
-
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
                     if(ManualTurretOn){
@@ -316,90 +245,165 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
             if(ManualTurretToggle.isPressed()){
                 ManualTurretOn = !ManualTurretOn;
             }
-            scoringsystem.intake(gamepad1.left_trigger, gamepad1.right_trigger);
 
             if(TargetReset.isPressed()){
-                TargetPose = new Pose2D(DistanceUnit.MM,1800,1800,AngleUnit.DEGREES,0.0);
+                TargetPose = new Pose2D(DistanceUnit.MM,1680,1680,AngleUnit.DEGREES,0.0);
             }
 
             if (PinpointReset.isPressed()) {
                 pinpoint.recalibrateIMU();
                 sleep(500);
-                pinpoint.setPosition(new Pose2D(DistanceUnit.MM,-1494.382,-1349.533,AngleUnit.DEGREES,-90));
+                pinpoint.setPosition(ResetPose);
             }
 
-            Pose2D pos = pinpoint.getPosition();
+            if(!ManualSpeedOn){
+                scoringsystem.setLaunchVel( (int)  ScoringSystem.TurretDistToFlywheelVelocity(AuxiliaryLocalizationSystem.getDistance(pinpointPose, TargetPose)));
 
-            telemetry.addData("BotInitPoseRR",(Pose2d) blackboard.get("BotPoseRR"));
-            telemetry.addData("BotInitPoseConverted", AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
+                //up = increase y
+                //down = decrease y
+                //left = increase x
+                //right = decrease x
+                if (UpAccel.isPressed()) {
+                    TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)+50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                }
+                if (RightAccelSmol.isPressed()){
+                    TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)-50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                }
+                if (DownDecel.isPressed()) {
+                    TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM),TargetPose.getY(DistanceUnit.MM)-50,AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                }
+                if (LeftDecelSmol.isPressed()){
+                    TargetPose = new Pose2D(DistanceUnit.MM, TargetPose.getX(DistanceUnit.MM)+50,TargetPose.getY(DistanceUnit.MM),AngleUnit.DEGREES, TargetPose.getHeading(AngleUnit.DEGREES));
+                }
 
-            telemetry.addData("LimelightResultState", result == null ? "null" : (result.isValid() ? "Valid" : "Invalid"));
+            } else {
+                if (UpAccel.isPressed()) {
+                    scoringsystem.launchVelAdjust(ManualSpeedAdjustment);
+                }
+                if (RightAccelSmol.isPressed()){
+                    scoringsystem.launchVelAdjust(SmallManualSpeedAdjustment);
+                }
+                if (DownDecel.isPressed()) {
+                    scoringsystem.launchVelAdjust(-ManualSpeedAdjustment);
+                }
+                if (LeftDecelSmol.isPressed()){
+                    scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
+                }
+                scoringsystem.setLaunchVel(1365);
+            }
 
-            telemetry.addData("RobotState", robotState);
-            telemetry.addData("RobotIsInPreciseMode", precision);
+            scoringsystem.launcherUpdate();
 
-            telemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
-            telemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());
-            telemetry.addData("Front Right Motor Power: ", drivetrain.getFrontRightPower());
-            telemetry.addData("Back Right Motor Power: ", drivetrain.getBackRightPower());
+            scoringsystem.intake(gamepad1.left_trigger, gamepad1.right_trigger);
 
-            telemetry.addData("Intake Motor Velocity: ", scoringsystem.getIntakeVel());
-            telemetry.addData("Launcher Motor Velocity ", scoringsystem.getLauncherVel());
-
-            telemetry.addData("Launcher Motor TargetPose Vel: ", scoringsystem.LaunchVel);
-
-            //telemetry.addData("Launcher Motor Multiplier: ", ScoringSystem.LaunchMult);
-
-            telemetry.addData("Left Stick X: ", gamepad1.left_stick_x);
-            telemetry.addData("Left Stick Y: ", gamepad1.left_stick_y);
-            telemetry.addData("Right Stick X: ", gamepad1.right_stick_x);
-            telemetry.addData("Left Trigger: ", gamepad1.left_trigger);
-            telemetry.addData("Right Trigger: ", gamepad1.right_trigger);
-
-            telemetry.addData("Turret Positon: ", scoringsystem.getTurretPos());
-            telemetry.addData("Turret TargetPose Position", scoringsystem.getTurretTargetPos());
-            telemetry.addData("Robot Heading", Math.toDegrees(pinpoint.getHeading(AngleUnit.RADIANS)));
-
-            telemetry.addData("IMU Status", pinpoint.getDeviceStatus());
-            telemetry.addData(" IMU Info", infoIMU);
-            telemetry.addData("Camera Calculated Distance", AuxiliaryLocalizationSystem.getDistancefromAngle(result.getTy(), 750));
-            telemetry.addData("OdoCalculatedDistance", AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose));
-            telemetry.update();
-
-            dashboardTelemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
-            dashboardTelemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());
-            dashboardTelemetry.addData("Front Right Motor Power: ", drivetrain.getFrontRightPower());
-            dashboardTelemetry.addData("Back Right Motor Power: ", drivetrain.getBackRightPower());
-
-            dashboardTelemetry.addData("Intake Motor Velocity: ", scoringsystem.getIntakeVel());
-            dashboardTelemetry.addData("Launcher Motor Velocity ", scoringsystem.getLauncherVel());
-
-            dashboardTelemetry.addData("Launcher Motor TargetPose Vel: ", scoringsystem.LaunchVel);
-
-            dashboardTelemetry.addData("Turret Position: ", scoringsystem.getTurretPos());
-
-            dashboardTelemetry.addData("Left Stick X: ", gamepad1.left_stick_x);
-            dashboardTelemetry.addData("Left Stick Y: ", gamepad1.left_stick_y);
-            dashboardTelemetry.addData("Right Stick X: ", gamepad1.right_stick_x);
-            dashboardTelemetry.addData("Left Trigger: ", gamepad1.left_trigger);
-            dashboardTelemetry.addData("Right Trigger: ", gamepad1.right_trigger);
-
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
-            dashboardTelemetry.addData("Position", data);
-            telemetry.addData("Position", data);
-
-            String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.MM), pinpoint.getVelY(DistanceUnit.MM), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
-            dashboardTelemetry.addData("Velocity", velocity);
-            telemetry.addData("Velocity", velocity);
-
-            telemetry.addData("Status", pinpoint.getDeviceStatus());
-
-            telemetry.addData("Pinpoint Frequency", pinpoint.getFrequency()); //prints/gets the current refresh rate of the Pinpoint
-
-            telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
-
-            dashboardTelemetry.update();
+//            doTelemetry(
+//                    telemetry,
+//                    dashboardTelemetry,
+//                    drivetrain,
+//                    scoringsystem,
+//                    TargetPose,
+//                    result,
+//                    robotState,
+//                    gamepad1,
+//                    frequency
+//            );
         }
+    }
+
+    private void doTelemetry(
+            Telemetry telemetry,
+            Telemetry dashboardTelementry,
+            MecanumDrive drivetrain,
+            ScoringSystem scoringSystem,
+            Pose2D TargetPose,
+            LLResult result,
+            RobotState state,
+            Gamepad gamepad1,
+            double frequency
+    ) {
+        Pose2D pos = pinpoint.getPosition();
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.MM), pinpoint.getVelY(DistanceUnit.MM), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
+        publishDashboard(dashboardTelementry, drivetrain, scoringSystem, gamepad1, data, velocity);
+        publishTelementry(state, drivetrain, scoringSystem, TargetPose, result, data, velocity, frequency);
+    }
+
+    private void publishDashboard(Telemetry dashboardTelemetry, MecanumDrive drivetrain, ScoringSystem scoringsystem, Gamepad gamepad1, String data, String velocity) {
+        dashboardTelemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
+        dashboardTelemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());
+        dashboardTelemetry.addData("Front Right Motor Power: ", drivetrain.getFrontRightPower());
+        dashboardTelemetry.addData("Back Right Motor Power: ", drivetrain.getBackRightPower());
+
+        dashboardTelemetry.addData("Intake Motor Velocity: ", scoringsystem.getIntakeVel());
+        dashboardTelemetry.addData("Intake Motor Target Velocity ", -3600);
+
+        dashboardTelemetry.addData("Launcher Motor Velocity ", scoringsystem.getLauncherVel());
+        dashboardTelemetry.addData("Launcher Motor TargetPose Vel: ", scoringsystem.LaunchVel);
+
+        dashboardTelemetry.addData("Turret Position: ", scoringsystem.getTurretPos());
+
+        dashboardTelemetry.addData("Left Stick X: ", gamepad1.left_stick_x);
+        dashboardTelemetry.addData("Left Stick Y: ", gamepad1.left_stick_y);
+        dashboardTelemetry.addData("Right Stick X: ", gamepad1.right_stick_x);
+        dashboardTelemetry.addData("Left Trigger: ", gamepad1.left_trigger);
+        dashboardTelemetry.addData("Right Trigger: ", gamepad1.right_trigger);
+
+        dashboardTelemetry.addData("Position", data);
+        dashboardTelemetry.addData("Velocity", velocity);
+        dashboardTelemetry.update();
+    }
+    private void publishTelementry(RobotState robotState, MecanumDrive drivetrain, ScoringSystem scoringsystem, Pose2D TargetPose, LLResult result, String data, String velocity, double frequency) {
+
+
+        telemetry.addData("BotInitPoseRR",(Pose2d) blackboard.get("BotPoseRR"));
+        telemetry.addData("BotInitPoseConverted", AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
+
+        telemetry.addData("LimelightResultState", result == null ? "null" : (result.isValid() ? "Valid" : "Invalid"));
+
+        telemetry.addData("RobotState", robotState);
+
+        telemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
+        telemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());
+        telemetry.addData("Front Right Motor Power: ", drivetrain.getFrontRightPower());
+        telemetry.addData("Back Right Motor Power: ", drivetrain.getBackRightPower());
+
+        telemetry.addData("Intake Motor Velocity: ", scoringsystem.getIntakeVel());
+        telemetry.addData("Launcher Motor Velocity ", scoringsystem.getLauncherVel());
+
+        telemetry.addData("Launcher Motor TargetPose Vel: ", scoringsystem.LaunchVel);
+
+        //telemetry.addData("Launcher Motor Multiplier: ", ScoringSystem.LaunchMult);
+
+        telemetry.addData("Left Stick X: ", gamepad1.left_stick_x);
+        telemetry.addData("Left Stick Y: ", gamepad1.left_stick_y);
+        telemetry.addData("Right Stick X: ", gamepad1.right_stick_x);
+        telemetry.addData("Left Trigger: ", gamepad1.left_trigger);
+        telemetry.addData("Right Trigger: ", gamepad1.right_trigger);
+
+        telemetry.addData("Turret Positon: ", scoringsystem.getTurretPos());
+        telemetry.addData("Turret TargetPose Position", scoringsystem.getTurretTargetPos());
+        telemetry.addData("Robot Heading", Math.toDegrees(pinpoint.getHeading(AngleUnit.RADIANS)));
+
+        telemetry.addData("IMU Status", pinpoint.getDeviceStatus());
+        telemetry.addData(" IMU Info", infoIMU);
+        telemetry.addData("Camera Calculated Distance", AuxiliaryLocalizationSystem.getDistancefromAngle(result.getTy(), 750));
+        telemetry.addData("OdoCalculatedDistance", AuxiliaryLocalizationSystem.getDistance(pinpoint.getPosition(), TargetPose));
+
+        telemetry.addData("TargetPose X", TargetPose.getX(DistanceUnit.MM));
+        telemetry.addData("TargetPose Y", TargetPose.getY(DistanceUnit.MM));
+
+        telemetry.addData("Velocity", velocity);
+
+        telemetry.addData("Status", pinpoint.getDeviceStatus());
+
+        telemetry.addData("Pinpoint Frequency", pinpoint.getFrequency()); //prints/gets the current refresh rate of the Pinpoint
+
+        telemetry.addData("Position", data);
+
+        telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
+
+
+        telemetry.update();
     }
     enum RobotState {
         INTAKE,

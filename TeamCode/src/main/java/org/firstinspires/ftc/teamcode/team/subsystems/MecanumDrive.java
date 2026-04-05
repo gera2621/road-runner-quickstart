@@ -1,17 +1,22 @@
 package org.firstinspires.ftc.teamcode.team.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.team.libraries.SlewRateLimiter;
+
 public class MecanumDrive {
-    public final DcMotor leftFront;
-    public final DcMotor leftBack;
-    public final DcMotor rightFront;
-    public final DcMotor rightBack;
+    public final DcMotorEx leftFront;
+    public final DcMotorEx leftBack;
+    public final DcMotorEx rightFront;
+    public final DcMotorEx rightBack;
     public final IMU imu;
-    public MecanumDrive(DcMotor leftFront, DcMotor leftBack, DcMotor rightFront, DcMotor rightBack, IMU imu) {
+
+    public MecanumDrive(DcMotorEx leftFront, DcMotorEx leftBack, DcMotorEx rightFront, DcMotorEx rightBack, IMU imu) {
         this.leftFront = leftFront;
         this.leftBack = leftBack;
         this.rightFront = rightFront;
@@ -25,7 +30,18 @@ public class MecanumDrive {
         imu.initialize(parameters);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
+
+    public SlewRateLimiter leftFrontSlew = new SlewRateLimiter(4);
+    public SlewRateLimiter leftBackSlew = new SlewRateLimiter(4);
+    public SlewRateLimiter rightFrontSlew = new SlewRateLimiter(4);
+    public SlewRateLimiter rightBackSlew = new SlewRateLimiter(4);
 
     public void resetIMU() {
         imu.resetYaw();
@@ -46,10 +62,14 @@ public class MecanumDrive {
         double frontRightPower = ((-y - x - rx) / denominator) * (1 - (0.6 * sp));
         double backRightPower = ((-y + x - rx) / denominator) * (1 - (0.6 * sp));
 
-        leftFront.setPower(frontLeftPower);
-        leftBack.setPower(backLeftPower);
-        rightFront.setPower(frontRightPower);
-        rightBack.setPower(backRightPower);
+        leftFront.setPower(MecanumPowerCurve(frontLeftPower));
+        leftBack.setPower(MecanumPowerCurve(backLeftPower));
+        rightFront.setPower(MecanumPowerCurve(frontRightPower));
+        rightBack.setPower(MecanumPowerCurve(backRightPower));
+    }
+
+    public double MecanumPowerCurve (double input){
+        return 0.538721*Math.pow(input,3) + 0.46936*input;
     }
 
     public void zeroPowerBrake() {
@@ -78,5 +98,4 @@ public class MecanumDrive {
     public double getBackRightPower() {
         return rightBack.getPower();
     }
-
 }

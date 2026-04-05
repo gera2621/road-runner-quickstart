@@ -61,9 +61,6 @@ public class BlueAutoTeam extends LinearOpMode {
         Pose2d PGPGrabPose = new Pose2d(17,-49, Math.toRadians(-90));
 
         Vector2d PGPGatePos = new Vector2d(15.5, -52);
-        Pose2d PGPGatePose = new Pose2d(15.5, -52, Math.toRadians(-90));
-
-        Vector2d GateParkPos = new Vector2d(3, -55.5);
         Pose2d GateParkPose = new Pose2d(3, -55.5, Math.toRadians(0));
 
         Vector2d GateIntakePos = new Vector2d(12.5, -52.5);

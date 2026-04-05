@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.team.opmodes.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
@@ -17,10 +18,10 @@ public class TeleOpDrivetrainTest extends LinearOpMode {
         GamepadButton launchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
 
         MecanumDrive drivetrain = new MecanumDrive(
-                hardwareMap.dcMotor.get("leftFront"),
-                hardwareMap.dcMotor.get("leftBack"),
-                hardwareMap.dcMotor.get("rightFront"),
-                hardwareMap.dcMotor.get("rightBack"),
+                (DcMotorEx) hardwareMap.dcMotor.get("leftFront"),
+                (DcMotorEx) hardwareMap.dcMotor.get("leftBack"),
+                (DcMotorEx) hardwareMap.dcMotor.get("rightFront"),
+                (DcMotorEx) hardwareMap.dcMotor.get("rightBack"),
                 hardwareMap.get(IMU.class, "imu")
         );
 

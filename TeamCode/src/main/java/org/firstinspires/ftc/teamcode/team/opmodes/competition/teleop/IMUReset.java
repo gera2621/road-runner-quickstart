@@ -45,7 +45,7 @@ public class IMUReset extends LinearOpMode {
 
         pinpoint.recalibrateIMU();
 
-        sleep(500);
+        sleep(750);
         //if below doesn't work and sets the bot to 0, 0 replace ResetPosAndIMU with recalibrateIMU()
         pinpoint.setPosition(new Pose2D(DistanceUnit.MM, 0,0, AngleUnit.DEGREES, 0));
 
