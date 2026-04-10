@@ -148,6 +148,8 @@ public class TeleOpCompetitionRed extends LinearOpMode {
 
         double target = 0;
 
+        drivetrain.zeroPowerBrake();
+
         while (opModeIsActive()) {
 
             pinpoint.update();
@@ -188,7 +190,6 @@ public class TeleOpCompetitionRed extends LinearOpMode {
             switch (robotState) {
                 case INTAKE:
                     ServoGate.closeGate();
-                    drivetrain.zeroPowerFloat();
                     scoringsystem.launcherUpdate();
 
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
@@ -222,7 +223,6 @@ public class TeleOpCompetitionRed extends LinearOpMode {
 
                 case SCORE:
                     ServoGate.openGate();
-                    drivetrain.zeroPowerBrake();
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
                     if(ManualTurretOn){
@@ -313,20 +313,26 @@ public class TeleOpCompetitionRed extends LinearOpMode {
         }
     }
 
-//    private void doTelemetry(
-//            Telemetry telemetry,
-//            Telemetry dashboardTelementry,
-//            MecanumDrive drivetrain,
-//            ScoringSystem scoringSystem,
-//            Pose2D TargetPose,
-//            LLResult result,
-//            TeleOpCompetitionRed.RobotState state,
-//            Gamepad gamepad1,
-//            boolean precision,
-//            double frequency
-//    )
+    private void doTelemetry(
+            Telemetry telemetry,
+            Telemetry dashboardTelementry,
+            MecanumDrive drivetrain,
+            ScoringSystem scoringSystem,
+            Pose2D TargetPose,
+            LLResult result,
+            TeleOpCompetitionRed.RobotState state,
+            Gamepad gamepad1,
+            boolean precision,
+            double frequency
+    ){
+        Pose2D pos = pinpoint.getPosition();
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.MM), pinpoint.getVelY(DistanceUnit.MM), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
+        publishDashboard(dashboardTelementry, drivetrain, scoringSystem, gamepad1, data, velocity, frequency);
+        publishTelemetry(state, drivetrain, scoringSystem, TargetPose, result, data, velocity, frequency);
+    }
 
-    private void publishDashboard(Telemetry dashboardTelemetry, MecanumDrive drivetrain, ScoringSystem scoringsystem, Gamepad gamepad1, String data, String velocity) {
+    private void publishDashboard(Telemetry dashboardTelemetry, MecanumDrive drivetrain, ScoringSystem scoringsystem, Gamepad gamepad1, String data, String velocity, double frequency) {
         dashboardTelemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
         dashboardTelemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());
         dashboardTelemetry.addData("Front Right Motor Power: ", drivetrain.getFrontRightPower());
@@ -347,9 +353,10 @@ public class TeleOpCompetitionRed extends LinearOpMode {
 
         dashboardTelemetry.addData("Position", data);
         dashboardTelemetry.addData("Velocity", velocity);
+        dashboardTelemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
         dashboardTelemetry.update();
     }
-    private void publishTelemetry(TeleOpCompetitionRed.RobotState robotState, boolean precision, MecanumDrive drivetrain, ScoringSystem scoringsystem, Pose2D TargetPose, LLResult result, String data, String velocity, double frequency) {
+    private void publishTelemetry(TeleOpCompetitionRed.RobotState robotState, MecanumDrive drivetrain, ScoringSystem scoringsystem, Pose2D TargetPose, LLResult result, String data, String velocity, double frequency) {
 
 
         telemetry.addData("BotInitPoseRR",(Pose2d) blackboard.get("BotPoseRR"));
@@ -358,7 +365,6 @@ public class TeleOpCompetitionRed extends LinearOpMode {
         telemetry.addData("LimelightResultState", result == null ? "null" : (result.isValid() ? "Valid" : "Invalid"));
 
         telemetry.addData("RobotState", robotState);
-        telemetry.addData("RobotIsInPreciseMode", precision);
 
         telemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
         telemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());

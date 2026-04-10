@@ -41,15 +41,21 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
+
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
-
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+//        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+//
+//        for (LynxModule hub : allHubs) {
+//            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+//        }
 
         pinpoint.setOffsets(53,-101, DistanceUnit.MM);
 
@@ -66,8 +72,6 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
         int SmallManualSpeedAdjustment = 5;
         int ManualSpeedAdjustment = 25;
-
-        double oldTime = 0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("X offset", pinpoint.getXOffset(DistanceUnit.MM));
@@ -146,8 +150,18 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
         double target = 0;
         double frequency = 0;
+        long time = 0;
+        long oldTime = 0;
+
+        drivetrain.zeroPowerBrake();
 
         while (opModeIsActive()) {
+
+            frequency = time-oldTime;
+
+            for (LynxModule hub : allHubs) {
+                hub.clearBulkCache();
+            }
 
             pinpoint.update();
 
@@ -187,7 +201,6 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
             switch (robotState) {
                 case INTAKE:
                     ServoGate.closeGate();
-                    drivetrain.zeroPowerFloat();
                     scoringsystem.launcherUpdate();
 
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
@@ -201,7 +214,6 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
                 case PRESCORE:
                     ServoGate.closeGate();
-                    drivetrain.zeroPowerFloat();
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
                     if(ManualTurretOn){
@@ -221,7 +233,6 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
                 case SCORE:
                     ServoGate.openGate();
-                    drivetrain.zeroPowerBrake();
                     drivetrain.botOrientedDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
                     if(ManualTurretOn){
@@ -296,6 +307,9 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
             scoringsystem.intake(gamepad1.left_trigger, gamepad1.right_trigger);
 
+            oldTime = time;
+            time = System.currentTimeMillis();
+
 //            doTelemetry(
 //                    telemetry,
 //                    dashboardTelemetry,
@@ -307,6 +321,10 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 //                    gamepad1,
 //                    frequency
 //            );
+
+            dashboardTelemetry.addData("Refresh Rate Hz", frequency);
+            dashboardTelemetry.update();
+
         }
     }
 
@@ -324,11 +342,11 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
         Pose2D pos = pinpoint.getPosition();
         String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
         String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.MM), pinpoint.getVelY(DistanceUnit.MM), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
-        publishDashboard(dashboardTelementry, drivetrain, scoringSystem, gamepad1, data, velocity);
+        publishDashboard(dashboardTelementry, drivetrain, scoringSystem, gamepad1, data, velocity, frequency);
         publishTelementry(state, drivetrain, scoringSystem, TargetPose, result, data, velocity, frequency);
     }
 
-    private void publishDashboard(Telemetry dashboardTelemetry, MecanumDrive drivetrain, ScoringSystem scoringsystem, Gamepad gamepad1, String data, String velocity) {
+    private void publishDashboard(Telemetry dashboardTelemetry, MecanumDrive drivetrain, ScoringSystem scoringsystem, Gamepad gamepad1, String data, String velocity, double frequency) {
         dashboardTelemetry.addData("Front Left Motor Power: ", drivetrain.getFrontLeftPower());
         dashboardTelemetry.addData("Back Left Motor Power: ", drivetrain.getBackLeftPower());
         dashboardTelemetry.addData("Front Right Motor Power: ", drivetrain.getFrontRightPower());
@@ -350,6 +368,7 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 
         dashboardTelemetry.addData("Position", data);
         dashboardTelemetry.addData("Velocity", velocity);
+        dashboardTelemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
         dashboardTelemetry.update();
     }
     private void publishTelementry(RobotState robotState, MecanumDrive drivetrain, ScoringSystem scoringsystem, Pose2D TargetPose, LLResult result, String data, String velocity, double frequency) {
