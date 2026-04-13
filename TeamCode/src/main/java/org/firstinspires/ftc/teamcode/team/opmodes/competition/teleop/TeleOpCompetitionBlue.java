@@ -310,17 +310,17 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
             oldTime = time;
             time = System.currentTimeMillis();
 
-//            doTelemetry(
-//                    telemetry,
-//                    dashboardTelemetry,
-//                    drivetrain,
-//                    scoringsystem,
-//                    TargetPose,
-//                    result,
-//                    robotState,
-//                    gamepad1,
-//                    frequency
-//            );
+            doTelemetry(
+                    telemetry,
+                    dashboardTelemetry,
+                    drivetrain,
+                    scoringsystem,
+                    TargetPose,
+                    result,
+                    robotState,
+                    gamepad1,
+                    frequency
+            );
 
             dashboardTelemetry.addData("Refresh Rate Hz", frequency);
             dashboardTelemetry.update();

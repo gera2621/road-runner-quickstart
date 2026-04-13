@@ -30,9 +30,9 @@ public class ScoringSystem {
     }
     @Config
     public static class launcherPIDF {
-        public static double P = 225;
-        public static double I = 0;
-        public static double D = 3;
+        public static double P = 280;
+        public static double I = 0.5;
+        public static double D = 1;
         public static double F = 16.5;
     }
     @Config
@@ -48,7 +48,7 @@ public class ScoringSystem {
     public static turretPIDF TurretPIDF = new turretPIDF();
 
 
-    public double LaunchVel = 1350;
+    public double LaunchVel = 1400;
     public double LaunchMult = 0.88;
 
     public ScoringSystem(DcMotorEx launcher, DcMotorEx intake, DcMotorEx turret, DcMotorEx launcher2) {
@@ -106,7 +106,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 1.114*(0.0000395906*Math.pow((distance), 2)+ 0.0754783*(distance) + 976.44332);
+        return 1.14*(0.0000395906*Math.pow((distance), 2)+ 0.0754783*(distance) + 976.44332);
     }
     //Used Odometry Distance
 
