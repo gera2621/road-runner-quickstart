@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team.subsystems;
 
+import org.firstinspires.ftc.teamcode.team.libraries.PIDController;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.InstantFunction;
@@ -30,10 +31,10 @@ public class ScoringSystem {
     }
     @Config
     public static class launcherPIDF {
-        public static double P = 280;
-        public static double I = 0.5;
-        public static double D = 1;
-        public static double F = 16.5;
+        public static double P = 0;
+        public static double I = 0;
+        public static double D = 0;
+        public static double F = 0;
     }
     @Config
     public static class turretPIDF {
@@ -46,6 +47,8 @@ public class ScoringSystem {
     public static launcherPIDF LauncherPIDF = new launcherPIDF();
     public static intakePIDF IntakePIDF = new intakePIDF();
     public static turretPIDF TurretPIDF = new turretPIDF();
+
+    public static PIDController launcherPID = new PIDController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D);
 
 
     public double LaunchVel = 1400;
@@ -93,11 +96,14 @@ public class ScoringSystem {
                 this::launcherOff
         );
     }
+
+    //
+
+
     public void launcherUpdate(){
-        launcher.setVelocityPIDFCoefficients(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D, launcherPIDF.F);
-        launcher.setVelocity(LaunchVel);
-        launcher2.setPower(launcher.getPower());
-        //launcher.setPower(LaunchMult*(12/(voltageSensor.getVoltage())));
+        double power = launcherPID.update(LaunchVel,launcher.getVelocity());
+        launcher.setVelocity(power);
+        launcher2.setPower(power);
     }
 
     public Action launcherUpdateAction(){
@@ -106,7 +112,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 1.14*(0.0000395906*Math.pow((distance), 2)+ 0.0754783*(distance) + 976.44332);
+        return 1.15*(0.0000395906*Math.pow((distance), 2)+ 0.0754783*(distance) + 976.44332);
     }
     //Used Odometry Distance
 
