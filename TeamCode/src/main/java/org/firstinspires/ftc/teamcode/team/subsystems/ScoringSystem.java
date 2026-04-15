@@ -31,8 +31,8 @@ public class ScoringSystem {
     }
     @Config
     public static class launcherPIDF {
-        public static double P = 0;
-        public static double I = 0;
+        public static double P = 14;
+        public static double I = 0.00008; //0.00012
         public static double D = 0;
         public static double F = 0;
     }
@@ -96,10 +96,6 @@ public class ScoringSystem {
                 this::launcherOff
         );
     }
-
-    //
-
-
     public void launcherUpdate(){
         double power = launcherPID.update(LaunchVel,launcher.getVelocity());
         launcher.setVelocity(power);
@@ -112,7 +108,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 1.15*(0.0000395906*Math.pow((distance), 2)+ 0.0754783*(distance) + 976.44332);
+        return 1.165*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332);
     }
     //Used Odometry Distance
 

@@ -187,6 +187,8 @@ public class BlueAutoSolo extends LinearOpMode {
 
         while(opModeIsActive()) {
             blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
+            scoringSystem.launcherUpdate();
+            builtAuto.run(new TelemetryPacket());
             //System.out.printf("%s %s %s %s\n", blackboard, drivetrain, drivetrain.localizer, drivetrain.localizer.getPose());
 
             telemetry.addData("Intake Motor Velocity: ", scoringSystem.getIntakeVel());
@@ -201,7 +203,7 @@ public class BlueAutoSolo extends LinearOpMode {
             dashboardTelemetry.addData("Launcher Motor Target Vel: ", scoringSystem.LaunchVel);
 
             dashboardTelemetry.update();
-            builtAuto.run(new TelemetryPacket());
+
         }
     }
 }
