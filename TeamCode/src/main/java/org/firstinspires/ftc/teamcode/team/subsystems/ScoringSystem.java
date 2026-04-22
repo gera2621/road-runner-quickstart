@@ -65,7 +65,7 @@ public class ScoringSystem {
         this.intake = intake;
 
         intake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        //intake.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setVelocityPIDFCoefficients(intakePIDF.P, intakePIDF.I, intakePIDF.D, intakePIDF.F);
 
         this.turret = turret;
@@ -108,7 +108,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 1.165*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332);
+        return 0.99857*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332);
     }
     //Used Odometry Distance
 
