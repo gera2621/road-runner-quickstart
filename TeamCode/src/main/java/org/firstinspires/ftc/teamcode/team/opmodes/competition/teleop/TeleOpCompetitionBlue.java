@@ -30,6 +30,8 @@ import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 import org.firstinspires.ftc.teamcode.team.internalLib.AuxiliaryLocalizationSystem;
 
+import org.firstinspires.ftc.teamcode.roadrunner.PinpointLocalizer;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +40,8 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
     private String infoIMU = "";
     private Limelight3A limelight;
     public GoBildaPinpointDriver pinpoint;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
 

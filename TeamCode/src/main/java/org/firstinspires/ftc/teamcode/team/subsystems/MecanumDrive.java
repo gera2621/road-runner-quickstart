@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.team.libraries.Lerp;
 import org.firstinspires.ftc.teamcode.team.libraries.SlewRateLimiter;
 
 public class MecanumDrive {
@@ -38,11 +39,18 @@ public class MecanumDrive {
 
     }
 
-    public SlewRateLimiter leftFrontSlew = new SlewRateLimiter(4);
-    public SlewRateLimiter leftBackSlew = new SlewRateLimiter(4);
-    public SlewRateLimiter rightFrontSlew = new SlewRateLimiter(4);
-    public SlewRateLimiter rightBackSlew = new SlewRateLimiter(4);
-
+    private final Lerp OrthogonalLerp = new Lerp(new double[][]{
+        {0, 0},
+        {0.02, 0.03},
+        {0.5, 0.35},
+        {1, 1}
+    });
+    private final Lerp RotationalLerp = new Lerp(new double[][]{
+            {0, 0},
+            {0.02, 0.02},
+            {0.5, 0.2},
+            {1, 7}
+    });
     public void resetIMU() {
         imu.resetYaw();
     }
@@ -50,12 +58,19 @@ public class MecanumDrive {
     // it can be freely changed based on preference.
     // The equivalent button is start on Xbox-style controllers.
 
-    public void botOrientedDrive(double x, double y, double rx, double sp) {
+    //Drivetrain Contact Area = 300mm x 300mm. Shifted front 40mm from targeting center
+
+    public void botOrientedDrive(double lateral, double forward, double rotate, double sp) {
 
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
+
+        double y = OrthogonalLerp.interpolateMagnitude(forward);
+        double x = OrthogonalLerp.interpolateMagnitude(lateral);
+        double rx = 0.6*RotationalLerp.interpolateMagnitude(rotate);
+
         double denominator = Math.max(Math.abs(rx) + Math.abs(x) + Math.abs(y), 1);
         double frontLeftPower = ((-y + x + rx) / denominator) * (1 - (0.6 * sp));
         double backLeftPower = ((-y - x + rx) / denominator) * (1 - (0.6 * sp));
@@ -69,7 +84,8 @@ public class MecanumDrive {
     }
 
     public double MecanumPowerCurve (double input){
-        return 0.538721*Math.pow(input,3) + 0.46936*input;
+        return input;
+        //return 0.538721*Math.pow(input,3) + 0.46936*input;
     }
 
     public void zeroPowerBrake() {

@@ -108,7 +108,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 0.99857*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332);
+        return 0.850*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332); //0.85 is a placeholder. tune this value more please.
     }
     //Used Odometry Distance
 

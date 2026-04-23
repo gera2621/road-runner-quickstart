@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode.team.opmodes.competition.autonomous;
 
+import static org.firstinspires.ftc.teamcode.team.internalLib.AutoMap.poseAngle;
+import static org.firstinspires.ftc.teamcode.team.internalLib.AutoMap.trunc;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.team.internalLib.AutoMap;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
@@ -20,9 +23,9 @@ public class BlueAutoPark extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        int littlePause = 200;
-        int scorePause = 1000;
-        int intakePause = 0;
+        double littlePause = AutoMap.LittlePause;
+        double scorePause = AutoMap.ScorePause;
+        double gatePause = AutoMap.GatePause;
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -38,23 +41,18 @@ public class BlueAutoPark extends LinearOpMode {
                 hardwareMap.servo.get("gate")
         );
 
-        Pose2d InitPosition = new Pose2d(-49.4, -47.9, Math.toRadians(-125));
+        final Pose2d InitPosition = AutoMap.BlueGoalInitPosition;
 
-        Vector2d ParkPos = new Vector2d(-25, -45);
-        Pose2d ParkPose = new Pose2d(-25, -45, Math.toRadians(-90));
+        final Pose2d Park = AutoMap.BluePark;
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
-
-        scoringSystem.setLaunchVel(2100);
-
-        int scoreAngle = -155;
 
         TrajectoryActionBuilder auto = drivetrain.actionBuilder(InitPosition)
                 //Init
                 .afterTime(0, ServoGate.closeGateAction())
 
                 //Park
-                .strafeToLinearHeading(ParkPos, Math.toRadians(-90));
+                .strafeToLinearHeading(trunc(Park), poseAngle(Park));
 
         waitForStart();
         if (isStopRequested()) return;

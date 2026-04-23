@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.team.opmodes.competition.autonomous;
 
+import static org.firstinspires.ftc.teamcode.team.internalLib.AutoMap.poseAngle;
+import static org.firstinspires.ftc.teamcode.team.internalLib.AutoMap.trunc;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -14,17 +17,18 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.team.internalLib.AutoMap;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
-@Autonomous(name = "7. Autonomous RED Far", group = "Autonomous OpMode")
+@Autonomous(name = "11. Autonomous RED Far", group = "Autonomous OpMode")
 public class RedAutoFar extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        int littlePause = 200;
-        int scorePause = 1000;
-        int intakePause = 0;
+        double littlePause = AutoMap.LittlePause;
+        double scorePause = AutoMap.ScorePause;
+        double intakePause = AutoMap.IntakePause;
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -40,24 +44,19 @@ public class RedAutoFar extends LinearOpMode {
                 hardwareMap.servo.get("gate")
         );
 
-        Pose2d InitPosition = new Pose2d(63, 26.29, Math.toRadians(180));
+        final Pose2d InitPosition = AutoMap.RedFarInitPosition;
 
-        Pose2d ScorePositionPose = new Pose2d(55, 11, Math.toRadians(155));
-        Vector2d ScorePositionPos = new Vector2d(55, 11);
+        final Pose2d ScorePosition = AutoMap.RedFarScorePosition;
 
-        Pose2d HumanAlignPose = new Pose2d(63.5,52, 90);
-        Vector2d HumanAlignPos = new Vector2d(63.5,52);
+        final Pose2d HumanAlign = AutoMap.RedHumanAlign;
 
-        Pose2d HumanGrabPose = new Pose2d(63.5,72, 90);
-        Vector2d HumanGrabPos = new Vector2d(63.5,72);
+        final Pose2d HumanGrab = AutoMap.RedHumanGrab;
 
-        Vector2d GPPAlignPos = new Vector2d(38, 35);
-        Pose2d GPPAlignPose = new Pose2d(38, 35, Math.toRadians(90));
+        final Pose2d GPPAlign = AutoMap.RedGPPAlign;
 
-        Vector2d GPPGrabPos = new Vector2d(38, 50);
-        Pose2d GPPGrabPose = new Pose2d(38, 50, Math.toRadians(90));
+        final Pose2d GPPGrab = AutoMap.RedGPPGrab;
 
-        Vector2d ParkPos = new Vector2d(55,35);
+        final Pose2d Park = AutoMap.RedParkFar;
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
@@ -72,91 +71,91 @@ public class RedAutoFar extends LinearOpMode {
                 .afterTime(0, scoringSystem.intakeAction(0, 1))
 
                 //Move to Scoring Position
-                .strafeToLinearHeading(ScorePositionPos, Math.toRadians(scoreAngle))
-                .waitSeconds((double)littlePause/500)
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
+                .waitSeconds(littlePause)
 
                 //Score
                 .afterTime(0, scoringSystem.intakeAction(0, 0))
                 .afterTime(0,ServoGate.openGateAction())
-                .waitSeconds((double)littlePause/1000)
+                .waitSeconds(littlePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 1))
-                .waitSeconds((double)scorePause/1000)
-                .afterTime(0, ServoGate.closeGateAction())
-
-                //Intake Human
-                .strafeToLinearHeading(HumanAlignPos, Math.toRadians(90),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
-                .lineToYSplineHeading(HumanGrabPos.y, Math.toRadians(90), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
-                .waitSeconds((double)intakePause/1000)
-                .afterTime(0.5, scoringSystem.intakeAction(0, 0))
-
-                //Move to scoring Positon
-                .strafeToLinearHeading(ScorePositionPos, Math.toRadians(scoreAngle))
-
-                //Score
-                .afterTime(0,ServoGate.openGateAction())
-                .waitSeconds((double)littlePause/1000)
-                .afterTime(0, scoringSystem.intakeAction(0, 1))
-                .waitSeconds((double)scorePause/1000)
-                .afterTime(0, scoringSystem.intakeAction(0, 0))
+                .waitSeconds(scorePause)
                 .afterTime(0, ServoGate.closeGateAction())
 
                 //Intake GPP
                 .setTangent(Math.toRadians(0))
                 .afterTime(1, scoringSystem.intakeAction(0, 1))
-                .splineToSplineHeading(GPPAlignPose, Math.toRadians(90))
-                .lineToYSplineHeading(GPPGrabPos.y, Math.toRadians(90))
+                .splineToSplineHeading(GPPAlign, poseAngle(GPPAlign))
+                .lineToYSplineHeading(trunc(GPPGrab).y, poseAngle(GPPGrab))
                 .afterTime(0.5, scoringSystem.intakeAction(0, 0))
 
                 //Move to Scoring Position
-                .strafeToLinearHeading(ScorePositionPos, Math.toRadians(scoreAngle))
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
 
                 //Score
                 .afterTime(0,ServoGate.openGateAction())
-                .waitSeconds((double)littlePause/1000)
+                .waitSeconds(littlePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 1))
-                .waitSeconds((double)scorePause/1000)
+                .waitSeconds(scorePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 0))
                 .afterTime(0, ServoGate.closeGateAction())
                 .afterTime(0.5, scoringSystem.intakeAction(0, 1))
 
                 //Intake Human
-                .strafeToLinearHeading(HumanAlignPos, Math.toRadians(90),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
-                .lineToYSplineHeading(HumanGrabPos.y, Math.toRadians(90), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
-                .waitSeconds((double)intakePause/1000)
+                .strafeToLinearHeading(trunc(HumanAlign), poseAngle(HumanAlign),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .lineToYSplineHeading(trunc(HumanGrab).y, poseAngle(HumanAlign), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .waitSeconds(intakePause)
                 .afterTime(0.5, scoringSystem.intakeAction(0, 0))
 
                 //Move to scoring Positon
-                .strafeToLinearHeading(ScorePositionPos, Math.toRadians(scoreAngle))
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
 
                 //Score
                 .afterTime(0,ServoGate.openGateAction())
-                .waitSeconds((double)littlePause/1000)
+                .waitSeconds(littlePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 1))
-                .waitSeconds((double)scorePause/1000)
+                .waitSeconds(scorePause)
+                .afterTime(0, scoringSystem.intakeAction(0, 0))
+                .afterTime(0, ServoGate.closeGateAction())
+
+                //Intake Human
+                .strafeToLinearHeading(trunc(HumanAlign), poseAngle(HumanAlign),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .lineToYSplineHeading(trunc(HumanGrab).y, poseAngle(HumanAlign), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .waitSeconds(intakePause)
+                .afterTime(0.5, scoringSystem.intakeAction(0, 0))
+
+                //Move to scoring Positon
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
+
+                //Score
+                .afterTime(0,ServoGate.openGateAction())
+                .waitSeconds(littlePause)
+                .afterTime(0, scoringSystem.intakeAction(0, 1))
+                .waitSeconds(scorePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 0))
                 .afterTime(0, ServoGate.closeGateAction())
                 .afterTime(0.5, scoringSystem.intakeAction(0, 1))
 
                 //Intake Human
-                .strafeToLinearHeading(HumanAlignPos, Math.toRadians(90),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
-                .lineToYSplineHeading(HumanGrabPos.y, Math.toRadians(90), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
-                .waitSeconds((double)intakePause/1000)
+                .strafeToLinearHeading(trunc(HumanAlign), poseAngle(HumanAlign),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .lineToYSplineHeading(trunc(HumanGrab).y, poseAngle(HumanAlign), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .waitSeconds(intakePause)
                 .afterTime(0.5, scoringSystem.intakeAction(0, 0))
 
                 //Move to scoring Positon
-                .strafeToLinearHeading(ScorePositionPos, Math.toRadians(scoreAngle))
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
 
                 //Score
                 .afterTime(0,ServoGate.openGateAction())
-                .waitSeconds((double)littlePause/1000)
+                .waitSeconds(littlePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 1))
-                .waitSeconds((double)scorePause/1000)
+                .waitSeconds(scorePause)
                 .afterTime(0, scoringSystem.intakeAction(0, 0))
                 .afterTime(0, ServoGate.closeGateAction())
                 .afterTime(0.5, scoringSystem.intakeAction(0, 1))
 
                 //Park
-                .strafeToLinearHeading(ParkPos, Math.toRadians(90));
+                .strafeToLinearHeading(trunc(Park), poseAngle(Park));
 
         waitForStart();
         if (isStopRequested()) return;

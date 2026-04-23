@@ -43,8 +43,6 @@ public class AuxiliaryLocalizationSystem {
 
         return  (knownHeightMM - (limelightLensHeightMM ) / Math.tan(angleToGoalRadians));
     }
-
-    double RescaleConstant = 1.04198639247;
     public static Pose2D ConvertRRPoseToDriverPose(Pose2d inputPose){
         double x = inputPose.position.x * -25.4;
         double y = inputPose.position.y * -25.4;

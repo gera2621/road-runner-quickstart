@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -18,14 +19,14 @@ import org.firstinspires.ftc.teamcode.team.internalLib.AutoMap;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
-@Autonomous(name = "10. Autonomous RED Goal Park ", group = "Autonomous OpMode")
-public class RedAutoPark extends LinearOpMode {
+@Autonomous(name = "6. Autonomous BLUE Far PARK", group = "Autonomous OpMode")
+public class BlueAutoFarPark extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
         double littlePause = AutoMap.LittlePause;
         double scorePause = AutoMap.ScorePause;
-        double gatePause = AutoMap.GatePause;
+        double intakePause = AutoMap.IntakePause;
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -41,18 +42,36 @@ public class RedAutoPark extends LinearOpMode {
                 hardwareMap.servo.get("gate")
         );
 
-        final Pose2d InitPosition = AutoMap.RedGoalInitPosition;
+        final Pose2d InitPosition = AutoMap.BlueFarInitPosition;
 
-        final Pose2d Park = AutoMap.RedPark;
+        final Pose2d ScorePosition = AutoMap.BlueFarScorePosition;
+
+        final Pose2d HumanAlign = AutoMap.BlueHumanAlign;
+
+        final Pose2d HumanGrab = AutoMap.BlueHumanGrab;
+
+        final Pose2d GPPAlign = AutoMap.BlueGPPAlign;
+
+        final Pose2d GPPGrab = AutoMap.BlueGPPGrab;
+
+        final Pose2d Park = AutoMap.BlueParkFar;
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
+
+        scoringSystem.setLaunchVel(2100);
+
+        int scoreAngle = 155;
 
         TrajectoryActionBuilder auto = drivetrain.actionBuilder(InitPosition)
                 //Init
                 .afterTime(0, ServoGate.closeGateAction())
 
-                //Park
-                .strafeToLinearHeading(trunc(Park), poseAngle(Park));
+                //Intake Human
+                .strafeToLinearHeading(trunc(HumanAlign), poseAngle(HumanAlign),drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .lineToYSplineHeading(trunc(HumanGrab).y, poseAngle(HumanGrab), drivetrain.defaultVelConstraint, drivetrain.slowAccelConstraint)
+                .waitSeconds(intakePause)
+                .afterTime(0.5, scoringSystem.intakeAction(0, 0));
+
 
         waitForStart();
         if (isStopRequested()) return;
