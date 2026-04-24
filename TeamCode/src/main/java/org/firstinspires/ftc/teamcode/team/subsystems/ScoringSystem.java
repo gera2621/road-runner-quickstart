@@ -32,7 +32,7 @@ public class ScoringSystem {
     @Config
     public static class launcherPIDF {
         public static double P = 14;
-        public static double I = 0.00008; //0.00012
+        public static double I = 0.00012; //0.00008
         public static double D = 0;
         public static double F = 0;
     }
@@ -59,7 +59,9 @@ public class ScoringSystem {
         this.launcher2 = launcher2;
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         launcher2.setDirection(DcMotorSimple.Direction.REVERSE);
-        launcher.setVelocityPIDFCoefficients(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D, launcherPIDF.F);
+
+        launcherPID.withIntegralRange(50);
+
         //this.voltageSensor = voltageSensor;
 
         this.intake = intake;
@@ -108,7 +110,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 0.850*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332); //0.85 is a placeholder. tune this value more please.
+        return 1.05*(0.000021906*Math.pow((distance), 2)+ 0.196*(distance) + 860.44332); //0.85 is a placeholder. tune this value more please.
     }
     //Used Odometry Distance
 
