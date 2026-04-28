@@ -69,7 +69,7 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
 //
         pinpoint.setPosition(AuxiliaryLocalizationSystem.ConvertRRPoseToDriverPose((Pose2d) blackboard.get("BotPoseRR")));
 
-        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1700,1450,AngleUnit.DEGREES,0.0);
+        Pose2D TargetPose = new Pose2D(DistanceUnit.MM,1650,1450,AngleUnit.DEGREES,0.0);
         Pose2D InitPose = new Pose2D(DistanceUnit.MM,-752.313,1360.717,AngleUnit.DEGREES,90);
         Pose2D ResetPose = new Pose2D(DistanceUnit.MM, 1530, 770, AngleUnit.DEGREES, 0); //1250, 975
         Pose2D ResetPoseHuman = new Pose2D(DistanceUnit.MM,-1494.382,-1349.533,AngleUnit.DEGREES,-90);

@@ -31,8 +31,8 @@ public class ScoringSystem {
     }
     @Config
     public static class launcherPIDF {
-        public static double P = 14.5;
-        public static double I = 0.00012; //0.00008
+        public static double P = 14; //14.5
+        public static double I = 0.0002; //0.000012 0.000014
         public static double D = 0.00000;
         public static double F = 0;
     }
@@ -51,7 +51,7 @@ public class ScoringSystem {
     public static PIDController launcherPID = new PIDController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D);
 
 
-    public double LaunchVel = 1240;
+    public double LaunchVel = 1260;
 
     public ScoringSystem(DcMotorEx launcher, DcMotorEx intake, DcMotorEx turret, DcMotorEx launcher2) {
         this.launcher = launcher;
@@ -61,7 +61,7 @@ public class ScoringSystem {
 
         launcherPID.reset();
 
-        launcherPID.withIntegralRange(50);
+        launcherPID.withIntegralRange(40);
 
         //this.voltageSensor = voltageSensor;
 
@@ -111,7 +111,7 @@ public class ScoringSystem {
         );
     }
     public static double TurretDistToFlywheelVelocity (double distance) {
-        return 0.95*(0.00000266667*Math.pow((distance), 2)+ 0.240435*(distance) + 900.28771); //1.0325
+        return 0.975*(0.0000166667*Math.pow((distance), 2)+ 0.240435*(distance) + 900.28771); //1.0325
     }
     //Used Odometry Distance
 
