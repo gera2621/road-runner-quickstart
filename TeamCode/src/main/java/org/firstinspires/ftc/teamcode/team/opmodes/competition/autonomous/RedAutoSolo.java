@@ -173,6 +173,7 @@ public class RedAutoSolo extends LinearOpMode {
         Action builtAuto = auto.build();
 
         while(opModeIsActive()) {
+            scoringSystem.launcherUpdate();
             blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
 
             telemetry.addData("Intake Motor Velocity: ", scoringSystem.getIntakeVel());

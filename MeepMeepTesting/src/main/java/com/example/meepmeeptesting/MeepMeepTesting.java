@@ -56,7 +56,56 @@ public class MeepMeepTesting {
 
 
         myBot.runAction(myBot.getDrive().actionBuilder(InitPosition)
-                .strafeToLinearHeading(trunc(Park), poseAngle(Park))
+
+                //Move to Scoring Position
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
+
+                //Score
+                //Intake PGP
+                .setTangent(Math.toRadians(-315))
+
+                .splineToSplineHeading(PGPAlign, poseAngle(PGPAlign))
+                .strafeToLinearHeading(trunc(PGPGrab), poseAngle(PGPGrab))
+                .setTangent(Math.toRadians(-180))
+                .splineToLinearHeading(GatePark, poseAngle(GatePark))
+
+                //Move to scoring Positon
+                .setTangent(-90)
+                .lineToYSplineHeading(trunc(PGPAlign).y, poseAngle(PGPAlign))
+                .splineToLinearHeading(ScorePosition, poseAngle(ScorePosition))
+
+                //Score
+
+                //MoveToGate 1
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(GateIntake, poseAngle(GateIntake))
+
+                //Move to scoring position
+                .setTangent(Math.toRadians(-270))
+                .splineToLinearHeading(ScorePosition, poseAngle(ScorePosition))
+
+                //Score
+
+                //Intake PPG
+                .setTangent(Math.toRadians(0))
+                .splineToSplineHeading(PPGAlign, poseAngle(PPGAlign))
+                .lineToYSplineHeading(trunc(PPGGrab).y, poseAngle(PPGGrab))
+
+                //Move to scoring Positon
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
+
+                //Score
+                .setTangent(Math.toRadians(0))
+                .splineToSplineHeading(GPPAlign, Math.toRadians(-90))
+                .lineToYSplineHeading(trunc(GPPGrab).y, poseAngle(GPPGrab))
+
+                //Move to Scoring Position
+                .strafeToLinearHeading(trunc(ScorePosition), poseAngle(ScorePosition))
+
+                //Score
+
+                //Park
+                .strafeTo(trunc(Park))
 
                         .build());
 

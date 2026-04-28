@@ -161,6 +161,7 @@ public class BlueAutoFar extends LinearOpMode {
 
         while(opModeIsActive()) {
             blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
+            scoringSystem.launcherUpdate();
             //System.out.printf("%s %s %s %s\n", blackboard, drivetrain, drivetrain.localizer, drivetrain.localizer.getPose());
 
             telemetry.addData("Intake Motor Velocity: ", scoringSystem.getIntakeVel());

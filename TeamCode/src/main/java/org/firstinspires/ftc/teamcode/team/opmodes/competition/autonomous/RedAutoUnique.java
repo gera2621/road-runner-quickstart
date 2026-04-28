@@ -92,16 +92,17 @@ public class RedAutoUnique extends LinearOpMode {
                 .afterTime(0, ServoGate.closeGateAction())
 
                 //Intake PGP
-                .setTangent(Math.toRadians(-315))
+                .setTangent(Math.toRadians(315))
 
                 .splineToSplineHeading(PGPAlign, poseAngle(PGPAlign))
                 .strafeToLinearHeading(trunc(PGPGrab), poseAngle(PGPGrab))
                 .afterTime(0.5, scoringSystem.intakeAction(0, 0))
 
-                .setTangent(Math.toRadians(-270))
+                .setTangent(Math.toRadians(270))
                 .splineToLinearHeading(GatePark, poseAngle(GatePark))
 
                 //Move to scoring Positon
+                .setTangent(90)
                 .lineToYSplineHeading(trunc(PGPAlign).y, poseAngle(PGPAlign))
                 .splineToLinearHeading(ScorePosition, poseAngle(ScorePosition))
 
@@ -121,7 +122,7 @@ public class RedAutoUnique extends LinearOpMode {
                 .afterTime(0, scoringSystem.intakeAction(0, 0))
 
                 //Move to scoring position
-                .setTangent(Math.toRadians(-270))
+                .setTangent(Math.toRadians(270))
                 .splineToLinearHeading(ScorePosition, poseAngle(ScorePosition))
 
                 //Score
@@ -177,6 +178,7 @@ public class RedAutoUnique extends LinearOpMode {
         Action builtAuto = auto.build();
 
         while(opModeIsActive()) {
+            scoringSystem.launcherUpdate();
             blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
 
             telemetry.addData("Intake Motor Velocity: ", scoringSystem.getIntakeVel());

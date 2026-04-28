@@ -58,7 +58,7 @@ public class BlueAutoFarPark extends LinearOpMode {
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 
-        scoringSystem.setLaunchVel(2100);
+        scoringSystem.setLaunchVel(0);
 
         int scoreAngle = 155;
 
@@ -79,6 +79,7 @@ public class BlueAutoFarPark extends LinearOpMode {
 
         while(opModeIsActive()) {
             blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
+            scoringSystem.launcherUpdate();
             //System.out.printf("%s %s %s %s\n", blackboard, drivetrain, drivetrain.localizer, drivetrain.localizer.getPose());
 
             telemetry.addData("Intake Motor Velocity: ", scoringSystem.getIntakeVel());

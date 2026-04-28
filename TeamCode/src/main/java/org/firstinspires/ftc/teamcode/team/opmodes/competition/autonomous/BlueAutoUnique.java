@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.team.internalLib.AutoMap;
 import org.firstinspires.ftc.teamcode.team.subsystems.ScoringSystem;
 import org.firstinspires.ftc.teamcode.team.subsystems.ServoGate;
 
-@Autonomous(name = "3. Autonomous BLUE Goal Unique", group = "Autonomous OpMode")
+@Autonomous(name = "3. Autonomous BLUE Goal Unique (?)", group = "Autonomous OpMode")
 public class BlueAutoUnique extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -102,6 +102,7 @@ public class BlueAutoUnique extends LinearOpMode {
                 .splineToLinearHeading(GatePark, poseAngle(GatePark))
 
                 //Move to scoring Positon
+                .setTangent(-90)
                 .lineToYSplineHeading(trunc(PGPAlign).y, poseAngle(PGPAlign))
                 .splineToLinearHeading(ScorePosition, poseAngle(ScorePosition))
 
@@ -179,6 +180,7 @@ public class BlueAutoUnique extends LinearOpMode {
 
         while(opModeIsActive()) {
             blackboard.put("BotPoseRR", drivetrain.localizer.getPose());
+            scoringSystem.launcherUpdate();
             //System.out.printf("%s %s %s %s\n", blackboard, drivetrain, drivetrain.localizer, drivetrain.localizer.getPose());
 
             telemetry.addData("Intake Motor Velocity: ", scoringSystem.getIntakeVel());
