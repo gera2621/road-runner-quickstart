@@ -51,8 +51,7 @@ public class ScoringSystem {
     public static PIDController launcherPID = new PIDController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D);
 
 
-    public double LaunchVel = 1400;
-    public double LaunchMult = 0.88;
+    public double LaunchVel = 1225;
 
     public ScoringSystem(DcMotorEx launcher, DcMotorEx intake, DcMotorEx turret, DcMotorEx launcher2) {
         this.launcher = launcher;

@@ -7,7 +7,7 @@ public class AutoMap {
     
     public static final double LittlePause = 0.2;
     public static final double ScorePause = 1;
-    public static final double GatePause = 2.5;
+    public static final double GatePause = 2;
 
     public static final double IntakePause = 0.25;
 
