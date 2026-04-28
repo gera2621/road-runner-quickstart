@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.team.internalLib;
+package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -48,7 +48,7 @@ public class AutoMap {
 
     public static final Pose2d BluePark = new Pose2d(-17, -32, Math.toRadians(-90));
 
-    public static final Pose2d BlueParkOnly = new Pose2d(-34, -48, Math.toRadians(-90));
+    public static final Pose2d BlueParkOnly = new Pose2d(-33, -49, Math.toRadians(-90));
 
     public static final Pose2d BlueParkFar = new Pose2d(55, -35, Math.toRadians(-90));
 
@@ -92,7 +92,7 @@ public class AutoMap {
 
     public static final Pose2d RedPark = new Pose2d(-17, 32, Math.toRadians(90));
 
-    public static final Pose2d RedParkOnly = new Pose2d(-34, 48, Math.toRadians(90));
+    public static final Pose2d RedParkOnly = new Pose2d(-33, 49, Math.toRadians(90));
 
     public static final Pose2d RedParkFar = new Pose2d(55, 35, Math.toRadians(90));
 

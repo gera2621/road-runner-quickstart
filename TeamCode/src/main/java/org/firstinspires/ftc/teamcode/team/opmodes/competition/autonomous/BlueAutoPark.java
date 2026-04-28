@@ -43,7 +43,7 @@ public class BlueAutoPark extends LinearOpMode {
 
         final Pose2d InitPosition = AutoMap.BlueGoalInitPosition;
 
-        final Pose2d Park = AutoMap.BluePark;
+        final Pose2d Park = AutoMap.BlueParkOnly;
 
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, InitPosition);
 

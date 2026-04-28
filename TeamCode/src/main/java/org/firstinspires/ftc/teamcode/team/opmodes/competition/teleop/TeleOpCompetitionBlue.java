@@ -304,7 +304,7 @@ public class TeleOpCompetitionBlue extends LinearOpMode {
                 if (LeftDecelSmol.isPressed()){
                     scoringsystem.launchVelAdjust(-SmallManualSpeedAdjustment);
                 }
-                scoringsystem.setLaunchVel(1365);
+                //scoringsystem.setLaunchVel(1365);
             }
 
             scoringsystem.launcherUpdate();
